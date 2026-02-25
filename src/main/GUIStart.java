@@ -120,7 +120,6 @@ public class GUIStart {
                     }
                     logger(names, 0);
                     model_txtfield.setText(names);
-                    //settings.set_settingsKey("mcJarPath", selectedFile.getAbsolutePath());
                 }
             }
         });
@@ -289,10 +288,6 @@ public class GUIStart {
 
     public File[] fileChooserDialog(boolean is_file) {
         JFileChooser file_chooser = new JFileChooser();
-        //file_chooser_dir = new File(UserDir + "/assets");
-
-
-        //logger(file_chooser.toString(), 0);
         FileFilter filter = new FileFilter() {
             @Override
             public boolean accept(File f) {
@@ -351,12 +346,4 @@ public class GUIStart {
             System.out.println(str);
         }
     }
-    /// called from getSettingsData() after a reference set for this script
-//    public void setTexturePackCombo(JSONObject tp){
-//        this.texturePacksJSON = tp;
-//        Set keys = tp.keySet();
-//        keys.forEach(k ->{
-//            this.texturepack_comboBox.addItem(k);
-//        });
-//    }
 }
