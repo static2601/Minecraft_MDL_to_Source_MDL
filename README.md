@@ -10,7 +10,7 @@
 - After unpacking, extract minecraft.jar assets into project's assets folder.
 - Python 3.14 or higher may be required.
   "Pillow" python module may also have to be installed for python script to work.
-  Try running it before installing. All required packages may be included. 
+  Try running it before installing. 
   Can be done in command prompt, running "pip3 install pillow".
   Check online for more installation info.
 
