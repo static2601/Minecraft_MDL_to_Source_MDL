@@ -16,9 +16,29 @@ public class PythonRunner {
     public String[] PythonRun(String model_name, Map<String, String> args) throws IOException, InterruptedException {
 
         // Define the command and arguments for the Python script
-        String modelname = model_name;
-        String modname = args.get("modname");
-        String assets = "assets\\assets";
+        //String modname = args.get("modname").toLowerCase();
+        String assets = args.get("assets");
+        String[] a_modname = assets.substring(0, assets.indexOf("\\models\\block")).split("\\\\");
+        String modname = a_modname[a_modname.length-1];
+        System.out.println("modname: " + modname);
+        //String modname = "another_furniture";
+        String path_to_assets = args.get("assets");
+        //String path_to = path_to_assets.substring( path_to_assets.indexOf("assets"), path_to_assets.indexOf(modname)-1);
+        System.out.println("path_to_assets: " + path_to_assets);
+        System.out.println(modname);
+        String path_to = path_to_assets.substring( 0, path_to_assets.indexOf(modname)-1);
+        System.out.println("path_to: " + path_to);
+
+        String model_subfolder = path_to_assets.substring(path_to_assets.indexOf("models\\block"));
+        System.out.println("model_subfolder: " + model_subfolder);
+        model_subfolder = model_subfolder.replace("models\\block", "");
+        if (model_subfolder.startsWith("\\")) model_subfolder = model_subfolder.substring(1);
+        System.out.println("model_subfolder: " + model_subfolder);
+        String modelname = model_subfolder + "\\" + model_name;
+        logger(modelname, 0);
+
+        //String assets = "assets\\assets";
+        //String assets = path_to;
         String path =   System.getProperty("user.dir") + "\\";
         String tools = args.get("tools");
         String game = args.get("game");
@@ -33,7 +53,8 @@ public class PythonRunner {
                 "assets\\mcexport.py",
                 "--tools", tools,
                 "--game", game,
-                "--assets", path + assets,
+                //"--assets", path + assets,
+                "--assets", path_to,
                 "--mod", modname,
                 "--out", path + output,
                 "--scale", scale,

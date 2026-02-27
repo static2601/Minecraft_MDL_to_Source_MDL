@@ -42,6 +42,7 @@ public class GUIStart {
     private final String UserDir;
     public String output_log;
     public String status_log;
+    private String assets_dir;
     private ArrayList<File> model_files = new ArrayList<>();
     //private ArrayList<File> blacklisted_files = new ArrayList<>();
 
@@ -83,12 +84,14 @@ public class GUIStart {
         UserDir = System.getProperty("user.dir");
         model_scale_spinner.setValue(48);
         skybox_scale_spinner.setValue(16);
+        //new File(UserDir + "/" + "assets/assets/")
+        //for (File mods : )
 
         // reload saved data
         System.out.println("settings.settings.tostring: "+ settings.settings);
        try{
             steamapps_txtfield.setText(settings.get_steamappsPath());
-            mod_combobox.setSelectedItem(settings.get_modName());
+            //mod_combobox.setSelectedItem(settings.get_modName());
             game_combobox.setSelectedItem(settings.get_shortGame());
             model_scale_spinner.setValue(settings.get_scale());
             skybox_scale_spinner.setValue(settings.get_skybox_scale());
@@ -157,12 +160,12 @@ public class GUIStart {
                 settings.set_scale( (Integer) model_scale_spinner.getValue());
                 settings.set_skybox_scale( (Integer) skybox_scale_spinner.getValue());
                 settings.set_shortGame(game_combobox.getSelectedItem().toString());
-                settings.set_modName(mod_combobox.getSelectedItem().toString());
                 settings.writeJson();
 
                 // run pythonrunner
                 Map<String, String> args = new HashMap<>();
-                args.put("modname", mod_combobox.getSelectedItem().toString().toLowerCase());
+                args.put("assets", assets_dir);
+                //args.put("modname", mod_combobox.getSelectedItem().toString().toLowerCase());
                 args.put("tools", tools_path);
                 args.put("game", game_path);
                 args.put("scale", model_scale_spinner.getValue().toString());
@@ -308,6 +311,7 @@ public class GUIStart {
             if (settings.has_key("file_chooser_dir"))
                 file_chooser_dir = new File(settings.get_file_chooser_dir());
             else file_chooser_dir = new File(UserDir + "/assets");
+
             file_chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
             file_chooser.setMultiSelectionEnabled(true);
             file_chooser.setFileFilter(filter);
@@ -317,6 +321,11 @@ public class GUIStart {
             if (returnVal == JFileChooser.APPROVE_OPTION) {
                 file_chooser_dir = file_chooser.getCurrentDirectory();
                 settings.set_file_chooser_dir(file_chooser_dir.toString());
+                // TODO: get actual assets folder, currently assets must be from root/assets/assets folder only
+                //String path_to = file_chooser_dir.getPath().replace(UserDir, "");
+                String path_to = file_chooser_dir.getPath();
+                assets_dir = path_to;
+
                 return file_chooser.getSelectedFiles();
             }
         }

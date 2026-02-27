@@ -148,7 +148,7 @@ def save_vtf(images: List[Image.Image], fp: str, no_refle=False):
     vtf.close()
 
 QC_MODELBASE = """
-$cdmaterials "models/{sb_dir}{mod_name}/"
+$cdmaterials "models/{sb_dir}{mod_name}/{model_subfolders}"
 $ambientboost
 $scale {pixel_scale}
 $staticprop
@@ -644,7 +644,9 @@ def export_texture(texture: str, texture_dir: str, out_dir: str) -> None:
         source = os.path.normpath(os.path.join(texture_dir, texture + '.png'))
         if not os.path.exists(source):
             logger.error(f'Texture file does not exist: {source}')
-            exit(1)
+
+            return
+            #exit(1)
 
     im = Image.open(source)
     if im.format != 'PNG':
@@ -690,7 +692,7 @@ def export_texture(texture: str, texture_dir: str, out_dir: str) -> None:
     sb_dir = ""
     if args.compile_skybox == "true":
         sb_dir = "skybox/"
-    cdmaterials = f'models/{mod_name}/{sb_dir}'
+    cdmaterials = f'models/{mod_name}/{sb_dir}{model_subfolders}'
     with open(out + '.vmt', 'w') as f:
         f.write(VMT_MODELS_TEMPLATE.format(
             cdmaterials=cdmaterials, texture_file=texture, surfaceprop='', proxy=proxy))
@@ -753,6 +755,13 @@ def parse_model(models_path: str, model_file: str) -> List[str]:
     """
 
     # TODO: handle namespace
+    # model_file is the name of the parent_file
+    # probably should have each texture variant as a different skin index
+    # would have to retrieve them all from the folder
+    # but how would we know when to do it?
+    # then, when selecting a model to compile, what do we select?
+    # would have to look at all files related, find parent, see if there are other skins...
+    # then might change depending on the mod used
     logger.info('-> parsing model...')
     logger.info("model_file: " + model_file)
     # taken from json only?
@@ -770,17 +779,23 @@ def parse_model(models_path: str, model_file: str) -> List[str]:
     qc = LineBuilder()
 
     textures = []
+    ''' key for texture, eg: side '''
     undefined_textures = []
+    ''' any texture(value in key:value) starting with # pointing to what tex to reference. 
+        textures not defined in model_file? '''
 
     if 'textures' in jmodel:
         # add to qc, beginning?
         qc('// JSON "textures":')
+        modname: str = ""
         for tex, val in jmodel['textures'].items():
             if ':' in val:
-                # splitting multiple times
+                # split into two, return second part
                 # val = eg: another_furniture:block/drawer/birch_front
-                val = val.split(':')[1]
-                logger.info(f"val after val.split(:)[1]: '{val}'") # block/drawer/birch_front
+                val = val.split(':')
+                modname = val[0]
+                val = val[1]
+                logger.info(f"if ':' in val -> modname: '{modname}', val: '{val}'") # block/drawer/birch_front
 
             # if first character of string is #,
             # add to undefined_textures: list
@@ -796,41 +811,80 @@ def parse_model(models_path: str, model_file: str) -> List[str]:
                 # maybe need to redefine how the texture is retrieved, 
                 # if is block/drawer/texture, else do as proceeded
                 # val = block/drawer/birch_front
+
                 logger.info(f"formatting val: '{val}'...")
-                # .replace(model_subfolders, '') added to remove subfolder in model_name if
                 # using different mod pack model (experimental)
-                val = val.replace('block/', '').replace(model_subfolders, '').replace(f'{mod_name}:', '')
+                val = val.replace('block/', '')
+                sub_dirs: str = ""
+                if "/" in val:
+                    new_val: str = val.split("/")[-1]
+                    sub_dirs = val.replace(new_val, "")
+                    val = new_val
+                    logger.info(f"val after split: {val}")
+
+                # assets_path = "E:\Coding Projects\ProjectFiles\IdeaProjects\Minecraft MDL to Source MDL\assets_other\assets"
+
                 logger.info(f"val: '{val}', tex:'{tex}'") # eg val: front, tex: birch_front
                 qc(f'$definevariable texture_{tex} "{val}"')
+
+                texture_path = os.path.join(assets_path, f'{modname}\\textures\\block\\{sub_dirs}')
+                #if modname == "minecraft":
+                #    texture_path = os.path.join(assets_path, f'{modname}\\textures\\block\\{sub_dirs}')
 
                 # texture_path will equal block/texture instead of block/drawer/texture
                 # which explains the error not finding the texture
                 # val needs to not strip the subfolder drawer
+
+                #logger.info(f"-> export_texture(val: '{val}', textures_path/model_subfolders, out_textures_path)")
+
+                logger.info(f"before export_texture() function")
+                logger.info(f"sub_dirs: '{sub_dirs}'")
                 logger.info(f"textureVars: '{textureVars}'")
-                logger.info(f"-> export_texture(val: '{val}', textures_path/model_subfolders, out_textures_path)")
-                logger.info(f"textures_path+model_subfolders: '{textures_path}/{model_subfolders}'")
-                export_texture(val, textures_path+"/"+model_subfolders, out_textures_path)
+                logger.info(f"val: '{val}'")
+                logger.info(f"textures_path: '{texture_path}'")
+
+                # if texture cant be found in 'textures_path', skipped. should anything else need to happen?
+                # maybe not insert into textures and texturesVars???
+                # in the case of acacia_1_tucked, texture from parent file '"bottom": "another_furniture:block/chair/oak_bottom"'
+                # is excluded because it would overwrite a tex already defined
+                export_texture(val, texture_path, out_textures_path)
 
             # defined texture variable
-            textures += [tex]
+            #textures += [tex]
 
             # if key(tex) is not in dict(textureVars) add it
             # should this be done? doing the opposite of original code.
-            if tex not in textureVars:
-                textureVars[tex] = val
-                logger.info(f"\"assert tex not in textureVars, Texture variable '{tex}' redefined.\"")
-                logger.info("Allowing it to pass for now.")
-                # what's happening is textures are being written to textureVars, then goes to parent json.
-                # sees front again in textures and overwrites it since front is already defined and cant be added again.
-                # was giving error texture variable redefined. When going to parent, textures are processed and may change
-                # should probably not add textures from parent files
 
-                # original code
-                #assert tex not in textureVars, f'Texture variable "{tex}" redefined.'
-                #textureVars[tex] = val
+            # going though model file, textures added. going through parent_file, textures with same name will redefine
+            # them. need to skip adding it. This only seems to happen in custom mod models.json
+            logger.info(f"------>textureVars: {textureVars}")
+            logger.info(f"------>trying assert tex not in textureVars")
+            #assert tex not in textureVars, f'Texture variable "{tex}" redefined.'
+
+            if tex in textureVars: logger.info(f'Texture variable "{tex}" trying to be redefined. skipped adding.')
             else:
-                # would have done 'textureVars[tex] = val' if not asserted.
-                logger.info(f"tex: '{tex}' IS in textureVars: '{textureVars}'")
+                textures += [tex]
+                textureVars[tex] = val
+
+            logger.info(f"------>tex: {tex}")
+            logger.info(f"------>val: {val}")
+            logger.info(f"------>textureVars: {textureVars}")
+
+            # if tex not in textureVars:
+            #     textureVars[tex] = val
+            #     logger.info(f"\"assert tex not in textureVars, Texture variable '{tex}' redefined.\"")
+            #     logger.info("Allowing it to pass for now.")
+            #     # what's happening is textures are being written to textureVars, then goes to parent json.
+            #     # sees front again in textures and overwrites it since front is already defined and cant be added again.
+            #     # was giving error texture variable redefined. When going to parent, textures are processed and may change
+            #     # should probably not add textures from parent files
+            #
+            #     # original code
+            #     #assert tex not in textureVars, f'Texture variable "{tex}" redefined.'
+            #     #textureVars[tex] = val
+            # else:
+            #     # would have done 'textureVars[tex] = val' if not asserted.
+            #     logger.info(f"tex: '{tex}' IS in textureVars: '{textureVars}'")
 
         qc()
 
@@ -845,13 +899,27 @@ def parse_model(models_path: str, model_file: str) -> List[str]:
             # in parent file, if parent file's parent file is minecraft mod,
             # and we are using a secondary mod, wont be able to find minecraft assets in mod
             # would need path to mc assets
-            parent_file = jmodel['parent'].replace('block/', '').replace(f'{mod_name}:', '')
+            logger.info(f"---------------------------->")
+            logger.info(f"parent_file: {jmodel['parent']}")
+            parent_file: str = jmodel['parent'].replace('block/', '').replace(f'{mod_name}:', '')
+            logger.info(f"parent_file before split: {parent_file}")
+
+            sub_dirs: str = ""
+            if "/" in parent_file:
+                new_parent_file: str = parent_file.split("/")[-1]
+                sub_dirs = parent_file.replace(new_parent_file, "")
+                parent_file = new_parent_file
+                logger.info(f"parent_file after split: {parent_file}")
+            models_path = os.path.join(assets_path, f'{mod_name}\\models\\block\\{sub_dirs}')
+            #logger.info(f"models_path: {models_path}")
 
             logger.info(f"models_path: '{models_path}'")
             logger.info(f"parent_file: '{parent_file}'")
 
             # set all textures in anything other then the main model json to undefined_textures?
             logger.info("-> undefined_texture += parse_model(models_path, parent_file)")
+            # go through parent_file the same way looking for more textures and elements to convert
+            # require_textures would return into undefined_textures
             undefined_textures += parse_model(models_path, parent_file)
 
             idx = parent_file.find('/')
@@ -870,6 +938,8 @@ def parse_model(models_path: str, model_file: str) -> List[str]:
 
         model = SMDModel()
         model_textures = []
+        ''' texture variable found in elements, value of texture. 
+            eg: "north": {"uv": [0, 0, 16, 16], "texture": "#front", "cullface": "north"}'''
 
         for elem in jmodel['elements']:
             start = Vector(*elem['from'])
@@ -992,13 +1062,25 @@ def parse_model(models_path: str, model_file: str) -> List[str]:
             smd('end')
             f.write(str(smd))
 
+    # if 'undefined_textures' contains any textures not in 'textures', add it to 'require_textures'
     require_textures = []
+    logger.info(f"undefined_textures: '{undefined_textures}'")
+    logger.info(f"textures: '{textures}'")
     for tex in undefined_textures:
         if tex not in textures:
             require_textures += [tex]
+            logger.info(f"tex: '{tex}' not in require_textures: '{require_textures}', adding tex: '{tex}'")
 
+    # in the case of anvil, template would be the real model because it contains everything,
+    # first json was just the variant with top face. can be replaced with textures like cracked
+    # will still compile as anvil and not template even though thats the qc name.
     real_model = len(require_textures) == 0 and len(textures) > 0
 
+    # if not a real_model then make it .qci???
+    # does real_model mean not the parent_file??
+    # parent_file containing everything we need to build it, not just variant textures.
+    # but should we use variant textures? probably yes in the case of drawer/bamboo, base json being bamboo style
+    # so should the texture be over written instead of skipping(where assert is)?
     qc_ext = '.qc' if real_model else '.qci'
     fp = os.path.join(out_models_path, model_file + qc_ext)
     os.makedirs(os.path.dirname(fp), exist_ok=True)
@@ -1008,7 +1090,7 @@ def parse_model(models_path: str, model_file: str) -> List[str]:
         sb_dir = "skybox/"
     with open(fp, 'w', encoding='utf-8') as f:
         if real_model:
-            f.write(QC_HEADER.format(model_file=model_file, sb_dir=sb_dir, mod_name=mod_name))
+            f.write(QC_HEADER.format(model_file=model_subfolders + model_file, sb_dir=sb_dir, mod_name=mod_name))
 
         f.write(str(qc))
 
@@ -1059,23 +1141,27 @@ folders = json_model.split("\\")
 for subfolder in folders:
     if count < len(folders) - 1:
         model_subfolders += subfolder + "/"
-    #else:
-        #json_model = subfolder
+    else:
+        json_model = subfolder
     count += 1
 
-#print("len(folders):", len(folders))
-#print("model_subfolders:", model_subfolders)
-#print("folders:", folders)
-#print("json_model:", json_model)
+print("len(folders):", len(folders))
+print("model_subfolders:", model_subfolders)
+print("folders:", folders)
+print("json_model:", json_model)
 #print("scale:", pixel_scale)
 
 mod_name = args.mod
-textures_path = os.path.join(assets_path, f'{mod_name}\\textures\\block')
-model_path = os.path.join(assets_path, f'{mod_name}\\models\\block')
+if model_subfolders != "":
+    textures_path = os.path.join(assets_path, f'{mod_name}\\textures\\block\\{model_subfolders}')
+    model_path = os.path.join(assets_path, f'{mod_name}\\models\\block\\{model_subfolders}')
+else:
+    textures_path = os.path.join(assets_path, f'{mod_name}\\textures\\block')
+    model_path = os.path.join(assets_path, f'{mod_name}\\models\\block')
 
 out_dir = args.out
-out_models_path = os.path.join(out_dir, f'modelsrc\\{mod_name}{sb_dir}')
-out_textures_path = os.path.join(out_dir, f'materialsrc\\{mod_name}{sb_dir}')
+out_models_path = os.path.join(out_dir, f'modelsrc\\{mod_name}\\{sb_dir}{model_subfolders}')
+out_textures_path = os.path.join(out_dir, f'materialsrc\\{mod_name}\\{sb_dir}{model_subfolders}')
 
 # write modelbase_1.qci
 model_base = os.path.join(out_models_path, 'modelbase_1.qci')
@@ -1088,7 +1174,7 @@ if args.compile_skybox == "true":
 logger.info('creating modelbase_1.qci')
 os.makedirs(out_models_path, exist_ok=True)
 with open(model_base, 'w', encoding='utf-8') as f:
-    print(QC_MODELBASE.format(mod_name=mod_name, sb_dir=sb_dir, pixel_scale=pixel_scale), file=f)
+    print(QC_MODELBASE.format(mod_name=mod_name, model_subfolders=model_subfolders, sb_dir=sb_dir, pixel_scale=pixel_scale), file=f)
 
 
 # TODO: dont use global variables
