@@ -29,7 +29,7 @@ logger = logging.getLogger('mcexport')
 logger.addHandler(stderr_handler)
 logger.addHandler(file_handler)
 
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)
 
 
 def runcmd(cmd: str) -> Tuple[bool, int, str]:
@@ -146,19 +146,22 @@ def save_vtf(images: List[Image.Image], fp: str, no_refle=False):
         vtf.write(raw)
 
     vtf.close()
-
+# $cdmaterials "models/{mod_name}/{sb_dir}{model_subfolders}"
 QC_MODELBASE = """
-$cdmaterials "models/{sb_dir}{mod_name}/{model_subfolders}"
+$cdmaterials "{path}"
 $ambientboost
 $scale {pixel_scale}
 $staticprop
 """
 
+# $definevariable mdlname "{model_file}"
+# $definevariable modname "{mod_name}"
+# $definevariable sb_dir  "{sb_dir}"
+# $include "modelbase_1.qci"
+# $modelname $modname$/$sb_dir$$mdlname$.mdl
 
 QC_HEADER = """// Template header
 $definevariable mdlname "{model_file}"
-$definevariable modname "{mod_name}"
-$definevariable sb_dir  "{sb_dir}"
 $include "modelbase_1.qci"
 
 """
@@ -174,7 +177,7 @@ $keyvalues
     }
 }
 
-$modelname $modname$/$sb_dir$$mdlname$.mdl
+$modelname $mdlname$.mdl
 
 $model "Body" $mesh$
 $applytextures // Call macro
@@ -189,7 +192,7 @@ $collisionmodel $mesh$.smd
 
 VMT_MODELS_TEMPLATE = """VertexLitGeneric
 {{
-    "$basetexture" "{cdmaterials}{texture_file}"
+    "$basetexture" "{cdmaterials}/{texture_file}"
     "$surfaceprop" "{surfaceprop}"
     "$alphatest" "1"
     {proxy}
@@ -634,17 +637,16 @@ class SMDModel:
         return builder
 
 
-def export_texture(texture: str, texture_dir: str, out_dir: str) -> None:
-    logger.info(f'->export_texture(texture="{texture}", texture_dir, out_dir)')
+def export_texture(texture: str, texture_dir: str, out_dirs: str) -> None:
+    logger.debug(f'->export_texture(texture="{texture}", texture_dir, out_dir)')
 
-    out = os.path.normpath(os.path.join(out_dir, texture))
+    out = os.path.normpath(os.path.join(out_dirs, texture))
     if texture == '$missing':
         im = Image.open(io.BytesIO(base64.b64decode(missing_texture)))
     else:
         source = os.path.normpath(os.path.join(texture_dir, texture + '.png'))
         if not os.path.exists(source):
-            logger.error(f'Texture file does not exist: {source}')
-
+            logger.warning(f'Texture file does not exist: {source}, skipping...')
             return
             #exit(1)
 
@@ -689,24 +691,33 @@ def export_texture(texture: str, texture_dir: str, out_dir: str) -> None:
         textureDimens[texture] = Vector(*im.size)
         save_vtf(im, out + '.vtf')
 
-    sb_dir = ""
-    if args.compile_skybox == "true":
-        sb_dir = "skybox/"
-    cdmaterials = f'models/{mod_name}/{sb_dir}{model_subfolders}'
+    # sb_dir = ""
+    # new_sb_dir = ""
+    # if args.compile_skybox == "true":
+    # #     sb_dir = "skybox/"
+    #     new_sb_dir = sb_dir + "/"
+    #cdmaterials = f'models/{mod_name}/{new_sb_dir}'
+
+    logger.debug("----------------------------------------------------------------------------")
+    cdmaterials = os.path.join("models", mod_name)
+    if sb_dir != "":
+        cdmaterials = os.path.join("models", mod_name, sb_dir)
+
+    logger.debug(f"cdmaterials: '{cdmaterials}'")
     with open(out + '.vmt', 'w') as f:
         f.write(VMT_MODELS_TEMPLATE.format(
             cdmaterials=cdmaterials, texture_file=texture, surfaceprop='', proxy=proxy))
 
     game_material = os.path.join(game_path, 'materials', cdmaterials, texture)
+    logger.debug(f"game_path: '{game_path}'")
+    logger.debug(f"game_material: '{game_material}'")
+    logger.debug(f"game material path: {os.path.dirname(game_material)}")
 
     os.makedirs(os.path.dirname(game_material), exist_ok=True)
     shutil.copyfile(out + '.vmt', game_material + '.vmt')
     shutil.copyfile(out + '.vtf', game_material + '.vtf')
 
-    # remove texture from textureVars?
-    logger.info(f"texture: {texture}")
-    logger.info(f"textureVars: {textureVars}")
-    logger.info("--> end of exporting textures <--")
+    logger.debug("--> end of exporting textures <--")
 
 
 def resolve_uv(texture: str) -> str:
@@ -722,8 +733,6 @@ def resolve_texture(texture: str) -> str:
     return textureVars[texture]
 
 
-# called from elements in parse_json as
-# convert_uv(uv, rotation)
 def convert_uv(mcuv: List[float], rotation=0) -> List[Vector]:
     mcuv = [v / 16 for v in mcuv]
     ref = [
@@ -762,20 +771,19 @@ def parse_model(models_path: str, model_file: str) -> List[str]:
     # then, when selecting a model to compile, what do we select?
     # would have to look at all files related, find parent, see if there are other skins...
     # then might change depending on the mod used
-    logger.info('-> parsing model...')
-    logger.info("model_file: " + model_file)
+    logger.debug('-> parsing model...')
+    logger.debug(f"model_file: {model_file}")
     # taken from json only?
     model_file = model_file.replace(f'{mod_name}:', '')
-    logger.info("model_path os joined: "+ os.path.join(models_path, model_file + '.json'))
+    logger.debug(f"model_path os joined: {os.path.join(models_path, model_file)}.json")
     with open(os.path.join(models_path, model_file + '.json')) as f:
         jmodel = json.load(f)
 
     idx: int = model_file.find('/')
-    #logger.info(f"indx: {idx}")
     model_name = model_file[idx + 1:]
-    print("model_name after model_file[idx + 1:]:", model_file[idx + 1:])
+    logger.debug(f"model_name after model_file[idx + 1:]: {model_file[idx + 1:]}")
 
-    logger.info(f'new qc: ' + model_file)
+    logger.info(f'new qc: {model_file}')
     qc = LineBuilder()
 
     textures = []
@@ -785,7 +793,6 @@ def parse_model(models_path: str, model_file: str) -> List[str]:
         textures not defined in model_file? '''
 
     if 'textures' in jmodel:
-        # add to qc, beginning?
         qc('// JSON "textures":')
         modname: str = ""
         for tex, val in jmodel['textures'].items():
@@ -795,15 +802,12 @@ def parse_model(models_path: str, model_file: str) -> List[str]:
                 val = val.split(':')
                 modname = val[0]
                 val = val[1]
-                logger.info(f"if ':' in val -> modname: '{modname}', val: '{val}'") # block/drawer/birch_front
+                logger.debug(f"if ':' in val -> modname: '{modname}', val: '{val}'")
 
-            # if first character of string is #,
-            # add to undefined_textures: list
             if val[0] == '#':
                 # imported texture
-                # so whole texture path without #
                 undefined_textures += [val[1:]]
-                logger.info(f"undefined_textures += {[val[1:]]}")
+                logger.debug(f"undefined_textures += {[val[1:]]}")
                 # add variable for where texture is to be used, in qc
                 qc(f'$definevariable texture_{tex} $texture_{val[1:]}$')
             else:
@@ -812,63 +816,56 @@ def parse_model(models_path: str, model_file: str) -> List[str]:
                 # if is block/drawer/texture, else do as proceeded
                 # val = block/drawer/birch_front
 
-                logger.info(f"formatting val: '{val}'...")
-                # using different mod pack model (experimental)
+                # split val into subdirectories and file name
                 val = val.replace('block/', '')
+                logger.debug(f"-=-=-=-=-=-=-=-=val: {val}")
                 sub_dirs: str = ""
                 if "/" in val:
                     new_val: str = val.split("/")[-1]
                     sub_dirs = val.replace(new_val, "")
                     val = new_val
-                    logger.info(f"val after split: {val}")
+                    logger.debug(f"val: '{val}', sub_dirs: '{sub_dirs}'")
 
-                # assets_path = "E:\Coding Projects\ProjectFiles\IdeaProjects\Minecraft MDL to Source MDL\assets_other\assets"
+                # assets_path = "...\Minecraft MDL to Source MDL\assets_other\assets"
+                logger.debug(f"val: '{val}', tex:'{tex}'") # eg val: front, tex: birch_front
+                #qc(f'$definevariable texture_{tex} "{val}"')
 
-                logger.info(f"val: '{val}', tex:'{tex}'") # eg val: front, tex: birch_front
+                #texture_path = os.path.join(assets_path, f'{modname}/textures/block/{sub_dirs}')
+                #texture_path = os.path.join(assets_path, modname, "textures", "block", sub_dirs)
+
+                val = os.path.join(sub_dirs, val)
+                texture_path = os.path.join(assets_path, modname, "textures", "block")
+                #out_texture_path = os.path.join(out_textures_path, sb_dir)
                 qc(f'$definevariable texture_{tex} "{val}"')
 
-                texture_path = os.path.join(assets_path, f'{modname}\\textures\\block\\{sub_dirs}')
-                #if modname == "minecraft":
-                #    texture_path = os.path.join(assets_path, f'{modname}\\textures\\block\\{sub_dirs}')
-
-                # texture_path will equal block/texture instead of block/drawer/texture
-                # which explains the error not finding the texture
-                # val needs to not strip the subfolder drawer
-
-                #logger.info(f"-> export_texture(val: '{val}', textures_path/model_subfolders, out_textures_path)")
-
-                logger.info(f"before export_texture() function")
-                logger.info(f"sub_dirs: '{sub_dirs}'")
-                logger.info(f"textureVars: '{textureVars}'")
-                logger.info(f"val: '{val}'")
-                logger.info(f"textures_path: '{texture_path}'")
+                logger.debug(f"before export_texture() function")
+                logger.debug(f"sub_dirs: '{sub_dirs}'")
+                logger.debug(f"textureVars: '{textureVars}'")
+                logger.debug(f"val: '{val}'")
+                logger.debug(f"textures_path: '{textures_path}'")
+                logger.debug(f"out_textures_path: '{out_textures_path}'")
 
                 # if texture cant be found in 'textures_path', skipped. should anything else need to happen?
                 # maybe not insert into textures and texturesVars???
                 # in the case of acacia_1_tucked, texture from parent file '"bottom": "another_furniture:block/chair/oak_bottom"'
                 # is excluded because it would overwrite a tex already defined
-                export_texture(val, texture_path, out_textures_path)
+                export_texture(val, textures_path, out_textures_path)
 
-            # defined texture variable
-            #textures += [tex]
-
-            # if key(tex) is not in dict(textureVars) add it
-            # should this be done? doing the opposite of original code.
 
             # going though model file, textures added. going through parent_file, textures with same name will redefine
             # them. need to skip adding it. This only seems to happen in custom mod models.json
-            logger.info(f"------>textureVars: {textureVars}")
-            logger.info(f"------>trying assert tex not in textureVars")
+            logger.debug(f"------>textureVars: {textureVars}")
+            logger.debug(f"------>trying assert tex not in textureVars")
             #assert tex not in textureVars, f'Texture variable "{tex}" redefined.'
 
-            if tex in textureVars: logger.info(f'Texture variable "{tex}" trying to be redefined. skipped adding.')
+            if tex in textureVars: logger.debug(f'Texture variable "{tex}" trying to be redefined. skipped adding.')
             else:
                 textures += [tex]
                 textureVars[tex] = val
 
-            logger.info(f"------>tex: {tex}")
-            logger.info(f"------>val: {val}")
-            logger.info(f"------>textureVars: {textureVars}")
+            logger.debug(f"------>tex: {tex}")
+            logger.debug(f"------>val: {val}")
+            logger.debug(f"------>textureVars: {textureVars}")
 
             # if tex not in textureVars:
             #     textureVars[tex] = val
@@ -891,33 +888,36 @@ def parse_model(models_path: str, model_file: str) -> List[str]:
     # if parent is included, should it go and get textures again?
     # skip for now?
     if 'parent' in jmodel:
-        logger.info("-> if 'parent' in jmodel - if statement")
+        logger.debug("-> if 'parent' in jmodel - if statement")
 
         # if parent: is "minecraft:block/block", skip?
         # nothing in there we need at the moment
-        if jmodel['parent'] != "minecraft:block/block":
+        if jmodel['parent'] == "minecraft:block/block":
+            logger.debug(f"skipping model, contains minecraft:block. parent: '{jmodel['parent']}'")
+        else:
             # in parent file, if parent file's parent file is minecraft mod,
             # and we are using a secondary mod, wont be able to find minecraft assets in mod
             # would need path to mc assets
-            logger.info(f"---------------------------->")
-            logger.info(f"parent_file: {jmodel['parent']}")
+            logger.debug(f"---------------------------->")
+            logger.debug(f"parent_file: {jmodel['parent']}")
             parent_file: str = jmodel['parent'].replace('block/', '').replace(f'{mod_name}:', '')
-            logger.info(f"parent_file before split: {parent_file}")
+            logger.debug(f"parent_file before split: {parent_file}")
 
+            # split subdirectories from parent_file name
             sub_dirs: str = ""
             if "/" in parent_file:
                 new_parent_file: str = parent_file.split("/")[-1]
                 sub_dirs = parent_file.replace(new_parent_file, "")
                 parent_file = new_parent_file
-                logger.info(f"parent_file after split: {parent_file}")
-            models_path = os.path.join(assets_path, f'{mod_name}\\models\\block\\{sub_dirs}')
-            #logger.info(f"models_path: {models_path}")
+                logger.debug(f"parent_file after split: {parent_file}")
 
-            logger.info(f"models_path: '{models_path}'")
-            logger.info(f"parent_file: '{parent_file}'")
+            #models_path = os.path.join(assets_path, f'{mod_name}/models/block/{sub_dirs}')
+            models_path = os.path.join(assets_path, mod_name, "models", "block", sub_dirs)
+            logger.debug(f"models_path: '{models_path}'")
+            logger.debug(f"parent_file: '{parent_file}'")
 
             # set all textures in anything other then the main model json to undefined_textures?
-            logger.info("-> undefined_texture += parse_model(models_path, parent_file)")
+            logger.debug("-> undefined_texture += parse_model(models_path, parent_file)")
             # go through parent_file the same way looking for more textures and elements to convert
             # require_textures would return into undefined_textures
             undefined_textures += parse_model(models_path, parent_file)
@@ -927,11 +927,15 @@ def parse_model(models_path: str, model_file: str) -> List[str]:
             qc(f'$include "{parent_file[idx + 1:]}.qci"')
             qc()
 
-        else:
-            logger.info(f"skipping model, contains minecraft:block. parent: '{jmodel['parent']}'")
 
-    if 'elements' in jmodel:
-        logger.info("-> if 'elements' in jmodel - if statement")
+    if 'elements' in jmodel or 'components' in jmodel:
+        # 'elements' can be labeled 'components'
+        # swap out 'elements' for 'components'
+        elements: str = 'elements'
+        if 'components' in jmodel:
+            elements = 'components'
+
+        logger.debug(f"-> if 'elements' in jmodel - if statement")
         qc(f'// JSON "elements"')
         qc(f'$definevariable mesh {model_name}')
         qc()
@@ -941,7 +945,7 @@ def parse_model(models_path: str, model_file: str) -> List[str]:
         ''' texture variable found in elements, value of texture. 
             eg: "north": {"uv": [0, 0, 16, 16], "texture": "#front", "cullface": "north"}'''
 
-        for elem in jmodel['elements']:
+        for elem in jmodel[elements]:
             start = Vector(*elem['from'])
             end = Vector(*elem['to'])
 
@@ -950,11 +954,11 @@ def parse_model(models_path: str, model_file: str) -> List[str]:
             end[0], end[1], end[2] = end[0], end[2], end[1]
 
             size = end - start
-            postiton = start + size / 2
-            postiton = (postiton) * Vector(-1, 1, 1)
-            cube = model.add_cube(postiton, size)
+            position = start + size / 2
+            position = (position) * Vector(-1, 1, 1)
+            cube = model.add_cube(position, size)
 
-            logger.info(f'cube: {size} @ {postiton}')
+            logger.debug(f'cube: {size} @ {position}')
 
             for facename, face in elem['faces'].items():
                 texture = face['texture']
@@ -1064,12 +1068,12 @@ def parse_model(models_path: str, model_file: str) -> List[str]:
 
     # if 'undefined_textures' contains any textures not in 'textures', add it to 'require_textures'
     require_textures = []
-    logger.info(f"undefined_textures: '{undefined_textures}'")
-    logger.info(f"textures: '{textures}'")
+    logger.debug(f"undefined_textures: '{undefined_textures}'")
+    logger.debug(f"textures: '{textures}'")
     for tex in undefined_textures:
         if tex not in textures:
             require_textures += [tex]
-            logger.info(f"tex: '{tex}' not in require_textures: '{require_textures}', adding tex: '{tex}'")
+            logger.debug(f"tex: '{tex}' not in require_textures: '{require_textures}', adding tex: '{tex}'")
 
     # in the case of anvil, template would be the real model because it contains everything,
     # first json was just the variant with top face. can be replaced with textures like cracked
@@ -1085,20 +1089,23 @@ def parse_model(models_path: str, model_file: str) -> List[str]:
     fp = os.path.join(out_models_path, model_file + qc_ext)
     os.makedirs(os.path.dirname(fp), exist_ok=True)
 
-    sb_dir = ""
-    if args.compile_skybox == "true":
-        sb_dir = "skybox/"
+    # sb_dir = ""
+    # if args.compile_skybox == "true":
+    #     sb_dir = "skybox/"
     with open(fp, 'w', encoding='utf-8') as f:
         if real_model:
-            f.write(QC_HEADER.format(model_file=model_subfolders + model_file, sb_dir=sb_dir, mod_name=mod_name))
+            #f.write(QC_HEADER.format(model_file=model_subfolders + model_file, sb_dir=sb_dir, mod_name=mod_name))
+            # $modname$/$sb_dir$$mdlname$.mdl
+            mdl_path = os.path.join(mod_name, sb_dir, model_subfolders, model_file)
+            f.write(QC_HEADER.format(model_file=mdl_path.replace("\\", "/")))
 
         f.write(str(qc))
 
         if real_model:
             f.write(QC_FOOTER)
 
-    logger.info(f"return require_textures: List[str] = '{require_textures}'")
-    logger.info("-> end of 'parse_json(models_path, model_file)'")
+    logger.debug(f"return require_textures: List[str] = '{require_textures}'")
+    logger.debug("-> end of 'parse_json(models_path, model_file)'")
     return require_textures
 
 
@@ -1106,82 +1113,101 @@ parser = argparse.ArgumentParser(
     description='Convert Minecraft JSON model to Source engine model')
 parser.add_argument('model', type=str, help='minecraft model, e.g. "furnace_on", relative to mod_name\\models\\block')
 parser.add_argument('--tools', type=str, help='the folder which contains studiomdl.exe',
-                    default=r'C:\Program Files (x86)\Steamsteamapps\common/Left 4 Dead 2\bin')
+                    default=r'C:\Program Files (x86)/Steamsteamapps/common/Left 4 Dead 2/bin')
 parser.add_argument('--game', type=str, help='the folder which contains gameinfo.txt',
                     default=r'C:\Program Files (x86)\Steam\steamapps\common\Left 4 Dead 2\left4dead2')
 parser.add_argument('--assets', type=str, help='path to the mod assets folder with project\'s assets dir')
 parser.add_argument('--mod', type=str, help='name of mod eg: minecraft', default='minecraft')
 parser.add_argument('-o', '--out', type=str, help='output folder', default='l4d2')
 parser.add_argument('--scale', type=int, help='scale in pixels', default=48)
-#parser.add_argument('--compile-normal', action='store_true', help="compile models as normal")
-# needs set up
 parser.add_argument('--compile-skybox', type=str, default='false', help="compile models for skybox at skybox-scale")
 parser.add_argument('--skybox-scale', type=int, help='scale in pixels', default=16)
-#
 parser.add_argument('--allow-template', action='store_true') # usage: args.allow_template
 args = parser.parse_args()
 
-tools_path = args.tools
-game_path = args.game
-assets_path = args.assets
-json_model = args.model
+tools_path: str = args.tools.replace("\\","/")
+game_path: str = args.game.replace("\\","/")
+assets_path: str = args.assets.replace("\\","/")
+json_model: str = args.model.replace("\\","/")
 
 # adjust for skybox scale if enabled
 sb_scale = 1
 sb_dir = ""
 if args.compile_skybox == "true":
-    sb_dir = "\\skybox"
+    sb_dir = "skybox"
     sb_scale = args.skybox_scale
 
 pixel_scale = (args.scale / 16) / sb_scale
+logger.debug("[------------------------------------]")
+logger.debug(f"Converting json_model: {json_model}")
 
 model_subfolders = ""
 count = 0
-folders = json_model.split("\\")
+folders = json_model.split("/")
 for subfolder in folders:
     if count < len(folders) - 1:
-        model_subfolders += subfolder + "/"
+        #model_subfolders += subfolder + "/"
+        model_subfolders = os.path.join(model_subfolders, subfolder)
     else:
         json_model = subfolder
     count += 1
+# if model_subfolders.endswith("/"):
+#     model_subfolders = model_subfolders[len(model_subfolders)-1]
 
-print("len(folders):", len(folders))
-print("model_subfolders:", model_subfolders)
-print("folders:", folders)
-print("json_model:", json_model)
+logger.debug(f"len(folders): '{len(folders)}'")
+logger.debug(f"model_subfolders: '{model_subfolders}'")
+logger.debug(f"folders: '{folders}'")
+logger.debug(f"json_model: '{json_model}'")
 #print("scale:", pixel_scale)
 
-mod_name = args.mod
-if model_subfolders != "":
-    textures_path = os.path.join(assets_path, f'{mod_name}\\textures\\block\\{model_subfolders}')
-    model_path = os.path.join(assets_path, f'{mod_name}\\models\\block\\{model_subfolders}')
-else:
-    textures_path = os.path.join(assets_path, f'{mod_name}\\textures\\block')
-    model_path = os.path.join(assets_path, f'{mod_name}\\models\\block')
+mod_name: str = args.mod
+# if model_subfolders != "":
+#     # TODO: textures_path still being used in resolve_uv(). Check if using correct path
+#     #textures_path = os.path.join(assets_path, f'{mod_name}/textures/block/{model_subfolders}')
+#     #textures_path = os.path.join(assets_path, mod_name, "textures", "block")
+#     #model_path = os.path.join(assets_path, f'{mod_name}/models/block/{model_subfolders}')
+#     model_path = os.path.join(assets_path, mod_name, "models", "block", model_subfolders)
+# else:
+#     #textures_path = os.path.join(assets_path, f'{mod_name}/textures/block')
+textures_path: str = os.path.join(assets_path, mod_name, "textures", "block")
+    #model_path = os.path.join(assets_path, f'{mod_name}/models/block')
+#model_path = os.path.join(assets_path, mod_name, "models", "block")
+model_path: str = os.path.join(assets_path, mod_name, "models", "block", model_subfolders)
 
-out_dir = args.out
-out_models_path = os.path.join(out_dir, f'modelsrc\\{mod_name}\\{sb_dir}{model_subfolders}')
-out_textures_path = os.path.join(out_dir, f'materialsrc\\{mod_name}\\{sb_dir}{model_subfolders}')
+out_dir: str = args.out.replace("\\","/")
+our_dir = out_dir#.replace("\\", "/")
+logger.debug(f"out path: {out_dir}")
+#out_models_path = os.path.join(out_dir, f'modelsrc/{mod_name}/{sb_dir}{model_subfolders}')
+out_models_path: str = os.path.join(out_dir, "modelsrc", mod_name, sb_dir, model_subfolders)
+#out_textures_path = os.path.join(out_dir, f'materialsrc/{mod_name}/{sb_dir}{model_subfolders}')
+out_textures_path: str = os.path.join(out_dir, "materialsrc", mod_name, sb_dir)
 
 # write modelbase_1.qci
-model_base = os.path.join(out_models_path, 'modelbase_1.qci')
+model_base: str = os.path.join(out_models_path, 'modelbase_1.qci')
 
 # need to overwrite modelbase_1.qci if scale is updated
 #if not os.path.exists(model_base):
-sb_dir = ""
-if args.compile_skybox == "true":
-    sb_dir = "skybox/"
-logger.info('creating modelbase_1.qci')
+# sb_dir = ""
+# if args.compile_skybox == "true":
+#     sb_dir = "skybox"
+logger.debug('creating modelbase_1.qci')
+
 os.makedirs(out_models_path, exist_ok=True)
 with open(model_base, 'w', encoding='utf-8') as f:
-    print(QC_MODELBASE.format(mod_name=mod_name, model_subfolders=model_subfolders, sb_dir=sb_dir, pixel_scale=pixel_scale), file=f)
+    # "models/{mod_name}/{sb_dir}{model_subfolders}"
 
+    #print(QC_MODELBASE.format(mod_name=mod_name, model_subfolders=model_subfolders, sb_dir=sb_dir, pixel_scale=pixel_scale), file=f)
+    #path = os.path.join("models", mod_name, sb_dir, model_subfolders)
+    path = os.path.join("models", mod_name, sb_dir)
+    logger.debug(f"------------------------------------> {path.replace("\\","/")}")
+    #f.write(QC_MODELBASE.format(mod_name=mod_name, model_subfolders=model_subfolders, sb_dir=sb_dir, pixel_scale=pixel_scale))
+    f.write(QC_MODELBASE.format(path=path.replace("\\","/"), pixel_scale=pixel_scale))
 
 # TODO: dont use global variables
 textureDimens = {}
 textureVars = {}
 
-logger.info("<-  Start  ->")
+logger.debug("<-  Start  ->")
 parse_model(model_path, json_model)
 
 cmd = f'"{os.path.join(tools_path, "studiomdl.exe")}" -game "{game_path}" -nop4 -nox360 "{os.path.join(out_models_path, json_model)}.qc"'
@@ -1193,4 +1219,4 @@ if not ok:
 
 logger.info("-> Compiling SMD...")
 std_output: str = stdout.decode().replace("\r\n", "\n")
-logger.info(std_output)
+logger.debug(std_output)
