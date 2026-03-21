@@ -1,10 +1,26 @@
 {
   "settings": {
+    "jar_chooser_dir": "",
     "steamappsPath": "",
-    "shortGame": "TF2",
+    "shortGame": "",
     "scale": 48,
-    "modName": "Minecraft",
+    "modName": "",
     "file_chooser_dir": "",
     "skybox_scale": 16
-  }
+  },
+  "defaults": {
+    "css:tools_path": "\\common\\Counter-Strike Source\\bin",
+    "l4d:tools_path": "\\common\\left 4 dead\\bin",
+    "csgo:game_path": "\\common\\Counter-Strike Global Offensive\\csgo",
+    "gmod:game_path": "\\common\\GarrysMod\\garrysmod",
+    "l4d:game_path": "\\common\\left 4 dead\\left4dead",
+    "l4d2:game_path": "\\common\\left 4 dead 2\\left4dead2",
+    "gmod:tools_path": "\\common\\GarrysMod\\bin",
+    "csgo:tools_path": "\\common\\Counter-Strike Global Offensive\\csgo\\bin",
+    "tf2:game_path": "\\common\\Team Fortress 2\\tf",
+    "css:game_path": "\\common\\Counter-Strike Source\\cstrike",
+    "tf2:tools_path": "\\common\\Team Fortress 2\\bin",
+    "l4d2:tools_path": "\\common\\left 4 dead 2\\bin"
+  },
+  "mod_paths": {}
 }

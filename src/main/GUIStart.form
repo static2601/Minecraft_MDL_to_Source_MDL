@@ -1,134 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="main.GUIStart">
   <grid id="27dc6" binding="jPanel1" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
-    <margin top="10" left="0" bottom="10" right="10"/>
+    <margin top="10" left="10" bottom="10" right="10"/>
     <constraints>
-      <xy x="20" y="20" width="852" height="541"/>
+      <xy x="20" y="20" width="1168" height="591"/>
     </constraints>
     <properties>
-      <background color="-1118482"/>
+      <background color="-13224394"/>
       <doubleBuffered value="true"/>
       <enabled value="true"/>
       <foreground color="-1118482"/>
     </properties>
     <border type="none"/>
     <children>
-      <grid id="3b46e" binding="main_jPanel" layout-manager="GridLayoutManager" row-count="9" column-count="5" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
-        <margin top="10" left="10" bottom="10" right="10"/>
+      <splitpane id="a7295">
         <constraints>
-          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="2" anchor="0" fill="3" indent="1" use-parent-layout="false"/>
+          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false">
+            <preferred-size width="200" height="200"/>
+          </grid>
         </constraints>
         <properties>
-          <background color="-1118482"/>
-          <focusCycleRoot value="true"/>
-          <opaque value="false"/>
+          <dividerLocation value="360"/>
+          <dividerSize value="20"/>
+          <focusable value="false"/>
+          <lastDividerLocation value="380"/>
+          <orientation value="0"/>
         </properties>
         <border type="none"/>
         <children>
-          <component id="13c16" class="javax.swing.JTextField" binding="model_txtfield">
+          <grid id="be2fd" binding="console_jpanel" layout-manager="BorderLayout" hgap="0" vgap="0">
             <constraints>
-              <grid row="1" column="1" row-span="1" col-span="3" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                <preferred-size width="200" height="-1"/>
-              </grid>
-            </constraints>
-            <properties>
-              <editable value="false"/>
-            </properties>
-          </component>
-          <component id="93a0a" class="javax.swing.JLabel">
-            <constraints>
-              <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
+              <splitpane position="right"/>
             </constraints>
             <properties>
               <enabled value="true"/>
-              <focusCycleRoot value="false"/>
-              <foreground color="-16777216"/>
-              <iconTextGap value="4"/>
-              <opaque value="false"/>
-              <text value="Model Scale (px): "/>
-              <verticalAlignment value="0"/>
-              <verticalTextPosition value="0"/>
             </properties>
-          </component>
-          <component id="63473" class="javax.swing.JLabel" binding="assetsFolderLabel">
-            <constraints>
-              <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties>
-              <enabled value="true"/>
-              <focusCycleRoot value="false"/>
-              <foreground color="-16777216"/>
-              <iconTextGap value="4"/>
-              <text value="Model JSON: "/>
-              <verticalAlignment value="0"/>
-              <verticalTextPosition value="0"/>
-            </properties>
-          </component>
-          <component id="a7061" class="javax.swing.JButton" binding="model_selection_btn">
-            <constraints>
-              <grid row="1" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties>
-              <actionCommand value="🔎"/>
-              <label value="🔎"/>
-              <text value="🔎"/>
-            </properties>
-          </component>
-          <component id="50927" class="javax.swing.JSpinner" binding="model_scale_spinner">
-            <constraints>
-              <grid row="5" column="1" row-span="1" col-span="3" vsize-policy="0" hsize-policy="6" anchor="9" fill="0" indent="0" use-parent-layout="false">
-                <minimum-size width="50" height="-1"/>
-                <preferred-size width="50" height="-1"/>
-                <maximum-size width="50" height="-1"/>
-              </grid>
-            </constraints>
-            <properties>
-              <background color="-1118482"/>
-              <doubleBuffered value="false"/>
-            </properties>
-          </component>
-          <component id="68d3" class="javax.swing.JSpinner" binding="skybox_scale_spinner">
-            <constraints>
-              <grid row="6" column="1" row-span="1" col-span="3" vsize-policy="0" hsize-policy="6" anchor="9" fill="0" indent="0" use-parent-layout="false">
-                <minimum-size width="50" height="-1"/>
-                <preferred-size width="50" height="-1"/>
-                <maximum-size width="50" height="-1"/>
-              </grid>
-            </constraints>
-            <properties>
-              <background color="-1118482"/>
-              <doubleBuffered value="false"/>
-            </properties>
-          </component>
-          <component id="aa4ea" class="javax.swing.JLabel">
-            <constraints>
-              <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties>
-              <enabled value="true"/>
-              <focusCycleRoot value="false"/>
-              <foreground color="-16777216"/>
-              <iconTextGap value="4"/>
-              <opaque value="false"/>
-              <text value="Skybox Scale: "/>
-              <verticalAlignment value="0"/>
-              <verticalTextPosition value="0"/>
-            </properties>
-          </component>
-          <grid id="be2fd" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
-            <margin top="0" left="0" bottom="0" right="0"/>
-            <constraints>
-              <grid row="8" column="0" row-span="1" col-span="5" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties/>
             <border type="none"/>
             <children>
               <tabbedpane id="1b6be" binding="tabbedPane1" default-binding="true">
-                <constraints>
-                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false">
-                    <preferred-size width="200" height="200"/>
-                  </grid>
-                </constraints>
+                <constraints border-constraint="Center"/>
                 <properties>
                   <enabled value="true"/>
                   <focusCycleRoot value="false"/>
@@ -145,6 +55,7 @@
                       <tabbedpane title="Status"/>
                     </constraints>
                     <properties>
+                      <autoscrolls value="true"/>
                       <enabled value="true"/>
                       <focusable value="false"/>
                     </properties>
@@ -153,8 +64,12 @@
                       <component id="ed6d4" class="javax.swing.JTextArea" binding="status_output">
                         <constraints/>
                         <properties>
-                          <editable value="false"/>
+                          <background color="-16777216"/>
+                          <editable value="true"/>
                           <focusable value="false"/>
+                          <font name="JetBrains Mono ExtraLight" size="14" style="0"/>
+                          <foreground color="-1"/>
+                          <tabSize value="2"/>
                         </properties>
                       </component>
                     </children>
@@ -164,6 +79,7 @@
                       <tabbedpane title="Console"/>
                     </constraints>
                     <properties>
+                      <autoscrolls value="true"/>
                       <focusable value="false"/>
                     </properties>
                     <border type="none"/>
@@ -171,12 +87,45 @@
                       <component id="93b7c" class="javax.swing.JTextArea" binding="console_output">
                         <constraints/>
                         <properties>
-                          <columns value="1"/>
+                          <background color="-16777216"/>
+                          <columns value="0"/>
                           <doubleBuffered value="false"/>
-                          <editable value="false"/>
+                          <editable value="true"/>
                           <focusable value="false"/>
+                          <font name="JetBrains Mono ExtraLight" size="14" style="0"/>
+                          <foreground color="-1"/>
                           <lineWrap value="false"/>
                           <name value=""/>
+                          <tabSize value="2"/>
+                          <text value=""/>
+                          <wrapStyleWord value="false"/>
+                        </properties>
+                      </component>
+                    </children>
+                  </scrollpane>
+                  <scrollpane id="c0fd1" binding="build_panel">
+                    <constraints>
+                      <tabbedpane title="Build"/>
+                    </constraints>
+                    <properties>
+                      <autoscrolls value="true"/>
+                      <focusable value="false"/>
+                    </properties>
+                    <border type="none"/>
+                    <children>
+                      <component id="19cc5" class="javax.swing.JTextArea" binding="build_output">
+                        <constraints/>
+                        <properties>
+                          <background color="-16777216"/>
+                          <columns value="0"/>
+                          <doubleBuffered value="false"/>
+                          <editable value="true"/>
+                          <focusable value="false"/>
+                          <font name="JetBrains Mono ExtraLight" size="14" style="0"/>
+                          <foreground color="-1"/>
+                          <lineWrap value="false"/>
+                          <name value=""/>
+                          <tabSize value="2"/>
                           <text value=""/>
                           <wrapStyleWord value="false"/>
                         </properties>
@@ -185,179 +134,477 @@
                   </scrollpane>
                 </children>
               </tabbedpane>
+              <grid id="ef642" layout-manager="GridLayoutManager" row-count="2" column-count="30" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                <margin top="0" left="0" bottom="0" right="0"/>
+                <constraints border-constraint="South"/>
+                <properties>
+                  <focusable value="false"/>
+                  <opaque value="false"/>
+                </properties>
+                <border type="none"/>
+                <children>
+                  <component id="91574" class="javax.swing.JLabel" binding="model_log_label">
+                    <constraints>
+                      <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <enabled value="true"/>
+                      <focusCycleRoot value="false"/>
+                      <font name="JetBrains Mono" style="1"/>
+                      <foreground color="-1118482"/>
+                      <iconTextGap value="4"/>
+                      <opaque value="false"/>
+                      <text value="Model: "/>
+                      <verticalAlignment value="0"/>
+                      <verticalTextPosition value="0"/>
+                      <visible value="true"/>
+                    </properties>
+                  </component>
+                  <component id="317da" class="javax.swing.JComboBox" binding="model_log_selector_cb">
+                    <constraints>
+                      <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="2" fill="1" indent="0" use-parent-layout="false">
+                        <minimum-size width="150" height="-1"/>
+                        <preferred-size width="150" height="-1"/>
+                      </grid>
+                    </constraints>
+                    <properties>
+                      <background color="-5855578"/>
+                      <enabled value="true"/>
+                      <font name="JetBrains Mono" style="1"/>
+                      <foreground color="-16777216"/>
+                      <model/>
+                      <visible value="true"/>
+                    </properties>
+                  </component>
+                  <component id="ad2b0" class="javax.swing.JButton" binding="console_clear_btn">
+                    <constraints>
+                      <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="4" fill="0" indent="0" use-parent-layout="false">
+                        <minimum-size width="150" height="-1"/>
+                      </grid>
+                    </constraints>
+                    <properties>
+                      <actionCommand value=""/>
+                      <doubleBuffered value="false"/>
+                      <focusCycleRoot value="true"/>
+                      <focusable value="false"/>
+                      <horizontalTextPosition value="11"/>
+                      <text value="Clear"/>
+                    </properties>
+                  </component>
+                  <component id="23296" class="javax.swing.JButton" binding="convert_btn">
+                    <constraints>
+                      <grid row="0" column="29" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="4" fill="0" indent="0" use-parent-layout="false">
+                        <minimum-size width="150" height="-1"/>
+                      </grid>
+                    </constraints>
+                    <properties>
+                      <doubleBuffered value="false"/>
+                      <focusable value="false"/>
+                      <horizontalTextPosition value="11"/>
+                      <text value="Convert"/>
+                    </properties>
+                  </component>
+                  <component id="5c9eb" class="javax.swing.JButton" binding="open_json_files_btn">
+                    <constraints>
+                      <grid row="0" column="3" row-span="1" col-span="13" vsize-policy="0" hsize-policy="3" anchor="4" fill="0" indent="0" use-parent-layout="false">
+                        <minimum-size width="150" height="-1"/>
+                      </grid>
+                    </constraints>
+                    <properties>
+                      <actionCommand value=""/>
+                      <doubleBuffered value="false"/>
+                      <focusable value="false"/>
+                      <horizontalTextPosition value="11"/>
+                      <text value="Open Json Files"/>
+                    </properties>
+                  </component>
+                  <component id="423b2" class="javax.swing.JButton" binding="open_materials_btn">
+                    <constraints>
+                      <grid row="0" column="16" row-span="1" col-span="13" vsize-policy="0" hsize-policy="3" anchor="4" fill="0" indent="0" use-parent-layout="false">
+                        <minimum-size width="150" height="-1"/>
+                      </grid>
+                    </constraints>
+                    <properties>
+                      <actionCommand value=""/>
+                      <doubleBuffered value="false"/>
+                      <focusable value="false"/>
+                      <horizontalTextPosition value="11"/>
+                      <text value="Open HL:MV"/>
+                    </properties>
+                  </component>
+                </children>
+              </grid>
             </children>
           </grid>
-          <component id="51727" class="javax.swing.JLabel">
+          <tabbedpane id="baef2" binding="tabbedPane2" default-binding="true">
             <constraints>
-              <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
+              <splitpane position="left"/>
             </constraints>
             <properties>
               <enabled value="true"/>
-              <focusCycleRoot value="false"/>
-              <foreground color="-16777216"/>
-              <iconTextGap value="4"/>
-              <opaque value="false"/>
-              <text value="Make Models: "/>
-              <verticalAlignment value="0"/>
-              <verticalTextPosition value="0"/>
+              <minimumSize width="788" height="100"/>
             </properties>
-          </component>
-          <component id="7c8db" class="javax.swing.JRadioButton" binding="make_models_checkbox">
-            <constraints>
-              <grid row="3" column="1" row-span="1" col-span="3" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties>
-              <background color="-1118482"/>
-              <borderPainted value="false"/>
-              <contentAreaFilled value="true"/>
-              <focusPainted value="false"/>
-              <focusable value="true"/>
-              <label value=""/>
-              <selected value="true"/>
-              <text value=""/>
-            </properties>
-          </component>
-          <component id="8f137" class="javax.swing.JLabel">
-            <constraints>
-              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties>
-              <enabled value="true"/>
-              <focusCycleRoot value="false"/>
-              <foreground color="-16777216"/>
-              <iconTextGap value="4"/>
-              <text value="Steamapps Dir: "/>
-              <verticalAlignment value="0"/>
-              <verticalTextPosition value="0"/>
-            </properties>
-          </component>
-          <component id="e43df" class="javax.swing.JTextField" binding="steamapps_txtfield">
-            <constraints>
-              <grid row="0" column="1" row-span="1" col-span="3" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                <preferred-size width="200" height="-1"/>
+            <border type="none"/>
+            <children>
+              <grid id="3b46e" binding="main_jPanel" layout-manager="GridLayoutManager" row-count="6" column-count="21" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                <margin top="0" left="0" bottom="0" right="0"/>
+                <constraints>
+                  <tabbedpane title="Main"/>
+                </constraints>
+                <properties>
+                  <background color="-1118482"/>
+                  <focusCycleRoot value="true"/>
+                  <foreground color="-13224394"/>
+                  <minimumSize width="788" height="100"/>
+                  <opaque value="false"/>
+                </properties>
+                <border type="none"/>
+                <children>
+                  <scrollpane id="5de53">
+                    <constraints>
+                      <grid row="1" column="0" row-span="4" col-span="11" vsize-policy="6" hsize-policy="7" anchor="8" fill="2" indent="0" use-parent-layout="false">
+                        <minimum-size width="300" height="-1"/>
+                        <maximum-size width="300" height="-1"/>
+                      </grid>
+                    </constraints>
+                    <properties/>
+                    <border type="none"/>
+                    <children>
+                      <component id="1c7f9" class="javax.swing.JList" binding="jars_list">
+                        <constraints/>
+                        <properties>
+                          <maximumSize width="0" height="-1"/>
+                          <minimumSize width="0" height="-1"/>
+                          <model/>
+                          <selectionMode value="0"/>
+                          <toolTipText value=""/>
+                        </properties>
+                      </component>
+                    </children>
+                  </scrollpane>
+                  <scrollpane id="9d5f0">
+                    <constraints>
+                      <grid row="1" column="11" row-span="4" col-span="2" vsize-policy="6" hsize-policy="7" anchor="8" fill="2" indent="0" use-parent-layout="false">
+                        <minimum-size width="300" height="-1"/>
+                        <maximum-size width="300" height="-1"/>
+                      </grid>
+                    </constraints>
+                    <properties/>
+                    <border type="none"/>
+                    <children>
+                      <component id="c6228" class="javax.swing.JList" binding="jar_files_list">
+                        <constraints/>
+                        <properties>
+                          <maximumSize width="0" height="-1"/>
+                          <minimumSize width="0" height="-1"/>
+                        </properties>
+                      </component>
+                    </children>
+                  </scrollpane>
+                  <component id="45807" class="javax.swing.JLabel" binding="availableModsLabel" default-binding="true">
+                    <constraints>
+                      <grid row="0" column="0" row-span="1" col-span="11" vsize-policy="0" hsize-policy="0" anchor="9" fill="0" indent="0" use-parent-layout="false">
+                        <minimum-size width="-1" height="40"/>
+                        <maximum-size width="-1" height="40"/>
+                      </grid>
+                    </constraints>
+                    <properties>
+                      <enabled value="true"/>
+                      <focusCycleRoot value="false"/>
+                      <font name="JetBrains Mono" style="1"/>
+                      <foreground color="-1118482"/>
+                      <iconTextGap value="4"/>
+                      <opaque value="false"/>
+                      <text value="Available Mods "/>
+                      <verticalAlignment value="0"/>
+                      <verticalTextPosition value="0"/>
+                      <visible value="true"/>
+                    </properties>
+                  </component>
+                  <component id="12252" class="javax.swing.JLabel" default-binding="true">
+                    <constraints>
+                      <grid row="0" column="11" row-span="1" col-span="10" vsize-policy="0" hsize-policy="0" anchor="9" fill="0" indent="0" use-parent-layout="false">
+                        <minimum-size width="-1" height="40"/>
+                        <maximum-size width="-1" height="40"/>
+                      </grid>
+                    </constraints>
+                    <properties>
+                      <enabled value="true"/>
+                      <focusCycleRoot value="false"/>
+                      <font name="JetBrains Mono" style="1"/>
+                      <foreground color="-1118482"/>
+                      <iconTextGap value="4"/>
+                      <opaque value="false"/>
+                      <text value="BlockState Models"/>
+                      <verticalAlignment value="0"/>
+                      <verticalTextPosition value="0"/>
+                      <visible value="true"/>
+                    </properties>
+                  </component>
+                  <grid id="de824" layout-manager="GridLayoutManager" row-count="1" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                    <margin top="0" left="0" bottom="0" right="0"/>
+                    <constraints>
+                      <grid row="5" column="1" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="9" fill="0" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <focusable value="false"/>
+                      <opaque value="false"/>
+                    </properties>
+                    <border type="none"/>
+                    <children>
+                      <component id="2bb22" class="javax.swing.JButton" binding="jar_add_button">
+                        <constraints>
+                          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="9" fill="0" indent="0" use-parent-layout="false">
+                            <minimum-size width="45" height="30"/>
+                            <preferred-size width="45" height="-1"/>
+                            <maximum-size width="45" height="30"/>
+                          </grid>
+                        </constraints>
+                        <properties>
+                          <focusPainted value="true"/>
+                          <focusable value="false"/>
+                          <hideActionText value="false"/>
+                          <horizontalTextPosition value="11"/>
+                          <text value="+"/>
+                        </properties>
+                      </component>
+                      <component id="aa77e" class="javax.swing.JButton" binding="jar_remove_button">
+                        <constraints>
+                          <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="9" fill="0" indent="0" use-parent-layout="false">
+                            <minimum-size width="45" height="30"/>
+                            <preferred-size width="45" height="-1"/>
+                            <maximum-size width="45" height="30"/>
+                          </grid>
+                        </constraints>
+                        <properties>
+                          <focusPainted value="true"/>
+                          <focusable value="false"/>
+                          <hideActionText value="false"/>
+                          <horizontalTextPosition value="11"/>
+                          <text value="-"/>
+                        </properties>
+                      </component>
+                    </children>
+                  </grid>
+                </children>
               </grid>
-            </constraints>
-            <properties/>
-          </component>
-          <component id="6d3ea" class="javax.swing.JButton" binding="steamapps_dir_search_btn">
-            <constraints>
-              <grid row="0" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties>
-              <actionCommand value="🔎"/>
-              <label value="🔎"/>
-              <text value="🔎"/>
-            </properties>
-          </component>
-          <component id="8a22" class="javax.swing.JLabel">
-            <constraints>
-              <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties>
-              <enabled value="true"/>
-              <focusCycleRoot value="false"/>
-              <foreground color="-16777216"/>
-              <iconTextGap value="4"/>
-              <opaque value="false"/>
-              <text value="Game: "/>
-              <verticalAlignment value="0"/>
-              <verticalTextPosition value="0"/>
-            </properties>
-          </component>
-          <component id="13434" class="javax.swing.JComboBox" binding="game_combobox">
-            <constraints>
-              <grid row="2" column="1" row-span="1" col-span="3" vsize-policy="0" hsize-policy="2" anchor="8" fill="0" indent="0" use-parent-layout="false">
-                <minimum-size width="150" height="-1"/>
-                <preferred-size width="150" height="-1"/>
+              <grid id="b6a50" layout-manager="GridLayoutManager" row-count="7" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                <margin top="0" left="0" bottom="0" right="0"/>
+                <constraints>
+                  <tabbedpane title="Settings"/>
+                </constraints>
+                <properties/>
+                <border type="none"/>
+                <children>
+                  <component id="e43df" class="javax.swing.JTextField" binding="steamapps_txtfield">
+                    <constraints>
+                      <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                        <preferred-size width="200" height="-1"/>
+                      </grid>
+                    </constraints>
+                    <properties>
+                      <background color="-5855578"/>
+                      <font name="JetBrains Mono" style="1"/>
+                      <foreground color="-16777216"/>
+                    </properties>
+                  </component>
+                  <component id="8f137" class="javax.swing.JLabel">
+                    <constraints>
+                      <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <enabled value="true"/>
+                      <focusCycleRoot value="false"/>
+                      <font name="JetBrains Mono" style="1"/>
+                      <foreground color="-1118482"/>
+                      <iconTextGap value="4"/>
+                      <text value="Steamapps Dir: "/>
+                      <verticalAlignment value="0"/>
+                      <verticalTextPosition value="0"/>
+                    </properties>
+                  </component>
+                  <component id="6d3ea" class="javax.swing.JButton" binding="steamapps_dir_search_btn">
+                    <constraints>
+                      <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <actionCommand value="🔎"/>
+                      <doubleBuffered value="false"/>
+                      <focusable value="false"/>
+                      <label value="🔎"/>
+                      <text value="🔎"/>
+                    </properties>
+                  </component>
+                  <component id="93a0a" class="javax.swing.JLabel">
+                    <constraints>
+                      <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <enabled value="true"/>
+                      <focusCycleRoot value="false"/>
+                      <font name="JetBrains Mono" style="1"/>
+                      <foreground color="-1118482"/>
+                      <iconTextGap value="4"/>
+                      <opaque value="false"/>
+                      <text value="Model Scale (px): "/>
+                      <verticalAlignment value="0"/>
+                      <verticalTextPosition value="0"/>
+                    </properties>
+                  </component>
+                  <component id="aa4ea" class="javax.swing.JLabel">
+                    <constraints>
+                      <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <enabled value="true"/>
+                      <focusCycleRoot value="false"/>
+                      <font name="JetBrains Mono" style="1"/>
+                      <foreground color="-1118482"/>
+                      <iconTextGap value="4"/>
+                      <opaque value="false"/>
+                      <text value="Skybox Scale: "/>
+                      <verticalAlignment value="0"/>
+                      <verticalTextPosition value="0"/>
+                    </properties>
+                  </component>
+                  <component id="50927" class="javax.swing.JSpinner" binding="model_scale_spinner">
+                    <constraints>
+                      <grid row="4" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="9" fill="0" indent="0" use-parent-layout="false">
+                        <minimum-size width="50" height="-1"/>
+                        <preferred-size width="50" height="-1"/>
+                        <maximum-size width="50" height="-1"/>
+                      </grid>
+                    </constraints>
+                    <properties>
+                      <background color="-13224394"/>
+                      <doubleBuffered value="false"/>
+                      <font name="JetBrains Mono" style="1"/>
+                    </properties>
+                  </component>
+                  <component id="68d3" class="javax.swing.JSpinner" binding="skybox_scale_spinner">
+                    <constraints>
+                      <grid row="5" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="9" fill="0" indent="0" use-parent-layout="false">
+                        <minimum-size width="50" height="-1"/>
+                        <preferred-size width="50" height="-1"/>
+                        <maximum-size width="50" height="-1"/>
+                      </grid>
+                    </constraints>
+                    <properties>
+                      <background color="-13224394"/>
+                      <doubleBuffered value="false"/>
+                      <font name="JetBrains Mono" style="1"/>
+                    </properties>
+                  </component>
+                  <component id="8a22" class="javax.swing.JLabel">
+                    <constraints>
+                      <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <enabled value="true"/>
+                      <focusCycleRoot value="false"/>
+                      <font name="JetBrains Mono" style="1"/>
+                      <foreground color="-1118482"/>
+                      <iconTextGap value="4"/>
+                      <opaque value="false"/>
+                      <text value="Game: "/>
+                      <verticalAlignment value="0"/>
+                      <verticalTextPosition value="0"/>
+                    </properties>
+                  </component>
+                  <component id="13434" class="javax.swing.JComboBox" binding="game_combobox">
+                    <constraints>
+                      <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="0" indent="0" use-parent-layout="false">
+                        <minimum-size width="150" height="-1"/>
+                        <preferred-size width="150" height="-1"/>
+                      </grid>
+                    </constraints>
+                    <properties>
+                      <background color="-5855578"/>
+                      <font name="JetBrains Mono" style="1"/>
+                      <foreground color="-16777216"/>
+                      <model>
+                        <item value="TF2"/>
+                        <item value="GMOD"/>
+                        <item value="CSS"/>
+                        <item value="CSGO"/>
+                        <item value="L4D"/>
+                        <item value="L4D2"/>
+                      </model>
+                    </properties>
+                  </component>
+                  <component id="51727" class="javax.swing.JLabel">
+                    <constraints>
+                      <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <enabled value="true"/>
+                      <focusCycleRoot value="false"/>
+                      <font name="JetBrains Mono" style="1"/>
+                      <foreground color="-1118482"/>
+                      <iconTextGap value="4"/>
+                      <opaque value="false"/>
+                      <text value="Make Models: "/>
+                      <verticalAlignment value="0"/>
+                      <verticalTextPosition value="0"/>
+                    </properties>
+                  </component>
+                  <component id="7c8db" class="javax.swing.JRadioButton" binding="make_models_checkbox">
+                    <constraints>
+                      <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <background color="-13224394"/>
+                      <borderPainted value="false"/>
+                      <contentAreaFilled value="true"/>
+                      <focusPainted value="false"/>
+                      <focusable value="true"/>
+                      <label value=""/>
+                      <selected value="true"/>
+                      <text value=""/>
+                    </properties>
+                  </component>
+                  <component id="b134c" class="javax.swing.JLabel">
+                    <constraints>
+                      <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <enabled value="true"/>
+                      <focusCycleRoot value="false"/>
+                      <font name="JetBrains Mono" style="1"/>
+                      <foreground color="-1118482"/>
+                      <iconTextGap value="4"/>
+                      <opaque value="false"/>
+                      <text value="Make Skybox Models: "/>
+                      <verticalAlignment value="0"/>
+                      <verticalTextPosition value="0"/>
+                    </properties>
+                  </component>
+                  <component id="a33b7" class="javax.swing.JRadioButton" binding="make_skybox_models_checkbox">
+                    <constraints>
+                      <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <background color="-13224394"/>
+                      <borderPainted value="false"/>
+                      <contentAreaFilled value="true"/>
+                      <enabled value="true"/>
+                      <focusPainted value="false"/>
+                      <focusable value="true"/>
+                      <label value=""/>
+                      <text value=""/>
+                    </properties>
+                  </component>
+                  <vspacer id="c7ecf">
+                    <constraints>
+                      <grid row="6" column="1" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                  </vspacer>
+                </children>
               </grid>
-            </constraints>
-            <properties>
-              <model>
-                <item value="Gmod"/>
-                <item value="TF2"/>
-              </model>
-            </properties>
-          </component>
-          <component id="23296" class="javax.swing.JButton" binding="convert_btn">
-            <constraints>
-              <grid row="7" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="4" fill="0" indent="0" use-parent-layout="false">
-                <minimum-size width="125" height="-1"/>
-              </grid>
-            </constraints>
-            <properties>
-              <horizontalTextPosition value="11"/>
-              <text value="Convert"/>
-            </properties>
-          </component>
-          <component id="ad2b0" class="javax.swing.JButton" binding="console_clear_btn">
-            <constraints>
-              <grid row="7" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false">
-                <minimum-size width="125" height="-1"/>
-              </grid>
-            </constraints>
-            <properties>
-              <actionCommand value=""/>
-              <focusCycleRoot value="true"/>
-              <horizontalTextPosition value="11"/>
-              <text value="Clear Console"/>
-            </properties>
-          </component>
-          <component id="5c9eb" class="javax.swing.JButton" binding="open_json_files_btn">
-            <constraints>
-              <grid row="7" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false">
-                <minimum-size width="125" height="-1"/>
-              </grid>
-            </constraints>
-            <properties>
-              <actionCommand value=""/>
-              <horizontalTextPosition value="11"/>
-              <text value="Open Json Files"/>
-            </properties>
-          </component>
-          <component id="b134c" class="javax.swing.JLabel">
-            <constraints>
-              <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties>
-              <enabled value="true"/>
-              <focusCycleRoot value="false"/>
-              <foreground color="-16777216"/>
-              <iconTextGap value="4"/>
-              <opaque value="false"/>
-              <text value="Make Skybox Models: "/>
-              <verticalAlignment value="0"/>
-              <verticalTextPosition value="0"/>
-            </properties>
-          </component>
-          <component id="a33b7" class="javax.swing.JRadioButton" binding="make_skybox_models_checkbox">
-            <constraints>
-              <grid row="4" column="1" row-span="1" col-span="3" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties>
-              <background color="-1118482"/>
-              <borderPainted value="false"/>
-              <contentAreaFilled value="true"/>
-              <enabled value="true"/>
-              <focusPainted value="false"/>
-              <focusable value="true"/>
-              <label value=""/>
-              <text value=""/>
-            </properties>
-          </component>
-          <component id="423b2" class="javax.swing.JButton" binding="open_materials_btn">
-            <constraints>
-              <grid row="7" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false">
-                <minimum-size width="125" height="-1"/>
-              </grid>
-            </constraints>
-            <properties>
-              <actionCommand value=""/>
-              <horizontalTextPosition value="11"/>
-              <text value="Open Game Dir"/>
-            </properties>
-          </component>
+            </children>
+          </tabbedpane>
         </children>
-      </grid>
+      </splitpane>
     </children>
   </grid>
 </form>
