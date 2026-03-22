@@ -10,7 +10,6 @@ import sys
 import argparse
 import base64
 import zipfile
-from logging import Logger
 from typing import List, Tuple, Any
 
 from PIL import Image
@@ -789,7 +788,6 @@ def open_texture_file(modname: str, texture_path:str, texture_val: str) -> bool:
         mod: str = modname
         # will not come in as minecraft unless texture has minecraft: prefix
         # so for below, if modname/texture not found, try minecraft/texture
-        #TODO should always be the same, mod_jar_path for all, remove mcjar_path
         jar_path: str
         if mod == "minecraft":
             jar_path = mcjar_path
@@ -802,7 +800,15 @@ def open_texture_file(modname: str, texture_path:str, texture_val: str) -> bool:
 
 
         logger.debug(f"\t\t\tmod: {mod}, jar_path: {jar_path}")
-        texture_prefix: str = os.path.join("assets", mod, "textures", "block")
+        # if we reran open_texture_file() with a new texture_path excluding block directory
+        # only need to replace mod
+        # TODO only replace mod, replace texture_prefix with texture_path
+
+        if texture_path.endswith("block"):
+            texture_prefix: str = os.path.join("assets", mod, "textures", "block")
+        else:
+            texture_prefix: str = os.path.join("assets", mod, "textures")
+
         file_to_extract: str = os.path.join(texture_prefix, texture_val + '.png').replace("\\", "/")
         logger.debug(f"\t\t\tfile_to_extract: {file_to_extract}")
         logger.debug(f"\t\t\tpath: {path}")
@@ -1068,12 +1074,31 @@ def parse_model(models_path: str, model_file: str) -> List[str]:
                 if modname == "":
                     modname = mod_name
                 #texture_path = os.path.join(assets_path, modname, "textures", "block")
+                # should path contain block ?
+                # "0": "endermanoverhaul:entity/badlands/badlands_enderman",
+                # is added here when it doesn't need it and fails to find texture
+                # is first time in testing this as been a problem
                 texture_path = os.path.join(mod_assets_path, modname, "textures", "block")
 
                 # if texture didnt have namespace: prefixed, then use default mod_name
                 # may also be something else? maybe just minecraft?
 
-                logger.debug(f"\t\t\topen_texture_file() -> returned: {open_texture_file(modname, texture_path, val)}") # try extracting if not exists
+                open_texture_result: bool = False
+                if open_texture_file(modname, texture_path, val):
+                    open_texture_result = True
+
+                #open_texture_result: bool = open_texture_file(modname, texture_path, val)
+                logger.debug(f"\t\t\topen_texture_file() -> returned: {open_texture_result}") # try extracting if not exists
+
+                if not open_texture_result:
+                    # try again without block in path
+                    logger.debug(f"\t\t\tRetrying open_texture_file() without block in path.")
+                    texture_path = os.path.join(mod_assets_path, modname, "textures")
+                    if open_texture_file(modname, texture_path, val):
+                        open_texture_result = True
+                    else:
+                        logger.debug(f"\t\t\topen_texture_file() -> returned: {open_texture_result}")
+
                 #out_texture_path = os.path.join(out_textures_path, sb_dir)
                 qc(f'$definevariable texture_{tex} "{val}"')
 
