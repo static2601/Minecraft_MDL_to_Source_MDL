@@ -30,11 +30,13 @@ public class PythonRunner {
 
         // model_name is from blockstates folder
         // looks like 'namespace:block/off/model'
+        //if (args.get("geo_path").isEmpty()) {
         if (model_name.contains(":")) {
             String[] split = model_name.split(":");
             modname = split[0];
             modelname = split[1].replace("block/", "");
         }
+        //}
 
         // need what variables still?
         // assets folder should be shared?
@@ -47,10 +49,14 @@ public class PythonRunner {
         String game = args.get("game");
         String mcJar = args.get("mc_jar");
         String modJar = args.get("mod_jar");
+        String is_geo = args.get("is_geo");
+        String geo_path = args.get("geo_path");
         String output = "assets"+ fs +"mcexports";
         String scale = args.get("scale");
         String skybox_scale = args.get("skybox_scale");
         String compile_skybox = args.get("compile_skybox"); // key is '--compile-skybox' if true
+        if (mcJar.isEmpty()) mcJar = "''";
+        if (modJar.isEmpty()) modJar = "''";
 
         ProcessBuilder processBuilder = new ProcessBuilder(
                 "python3",
@@ -59,6 +65,8 @@ public class PythonRunner {
                 "--game", game,
                 "--mcjar", mcJar,
                 "--mod_jar", modJar,
+                "--geo_path", geo_path,
+                "--is_geo", is_geo,
                 "--assets", base_assets_dir,
                 "--mod", modname,
                 "--out", path + output,
@@ -70,6 +78,7 @@ public class PythonRunner {
         );
 
         System.out.println("[PythonRun] start processing python");
+        System.out.println(processBuilder.command());
         processBuilder.redirectErrorStream(true); // Merges stderr into stdout
         Process process = processBuilder.start();
         // Read the output from the Python script
@@ -108,7 +117,7 @@ public class PythonRunner {
                 build_results.add(line);
                 continue;
             }
-            if (line.contains("[INFO]")) {
+            if (line.contains("[INFO]") || line.contains("[ERROR]")) {
                 status_results.add(line);
             }
             if (line.contains("[JSON_Path]:")) {
