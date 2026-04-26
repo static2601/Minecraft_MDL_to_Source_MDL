@@ -740,14 +740,24 @@ class GeoModel:
 
         with open(entity_path) as ff:
             logger.debug("entity_path exists, entity_json = json.load(f)")
-            entity_json = json.load(ff)
+            lines = []
+            for line in ff:
+                # Skip lines that start with // (ignoring leading whitespace)
+                if line.lstrip().startswith("//"):
+                    continue
+                elif line.lstrip().find("//"):
+                    lines.append(line.split("//")[0])
+                else:
+                    lines.append(line)
+            entity_json = json.loads("".join(lines))
+            #entity_json = json.load(ff)
 
             description = entity_json['minecraft:client_entity']['description']
             self.entity_id = description['identifier']
             self.entity_tex = description['materials']['default']
             self.entity_geo = description['geometry']['default']
             self.entity_anims = description['animations']
-            self.entity_scripts = description['scripts']['animate']
+            #self.entity_scripts = description['scripts']['animate']
 
             anim_dir: str = os.path.join(entity_path.split('entity')[0], "animations")
             self.entity_anim_path = find_anim_in_dir(anim_dir, self.entity_anims)
@@ -1516,7 +1526,17 @@ def parse_animation(bones: dict) -> bool:
     if os.path.exists(entity_path):
         with open(entity_path) as ff:
             logger.debug("entity_path exists, entity_json = json.load(f)")
-            entity_json = json.load(ff)
+            lines = []
+            for line in ff:
+                # Skip lines that start with // (ignoring leading whitespace)
+                if line.lstrip().startswith("//"):
+                    continue
+                elif line.lstrip().find("//"):
+                    lines.append(line.split("//")[0])
+                else:
+                    lines.append(line)
+            entity_json = json.loads("".join(lines))
+            #entity_json = json.load(ff)
 
     #logger.debug(f"materials: {entity_json['minecraft:client_entity']['description']['materials']['default']}")
     description = entity_json['minecraft:client_entity']['description']
@@ -1528,7 +1548,7 @@ def parse_animation(bones: dict) -> bool:
     # or do we already have the name from the path we imported with?
     # its the model/entity that contains the build elements
     ent_anims: dict = description['animations']
-    ent_scripts_anim: list = description['scripts']['animate']
+    #ent_scripts_anim: list = description['scripts']['animate']
 
     anim_dir: str = os.path.join(entity_path.split('entity')[0], "animations")
     #anim_path: str = find_anim_in_dir(anim_dir, ent_anims)
@@ -1554,10 +1574,19 @@ def parse_animation(bones: dict) -> bool:
         logger.debug(f"anim_path: {anim_path}")
 
         if os.path.exists(anim_path):
+            lines = []
             with open(anim_path) as ff:
                 logger.debug("anim_path exists, anim_json = json.load(f)")
                 logger.debug(f"\t[JSON_Path]:{anim_path}")
-                anim_json = json.load(ff)
+                for line in ff:
+                    # Skip lines that start with // (ignoring leading whitespace)
+                    if line.lstrip().startswith("//"):
+                        continue
+                    elif line.lstrip().find("//"):
+                        lines.append(line.split("//")[0])
+                    else:
+                        lines.append(line)
+                anim_json = json.loads("".join(lines))
         else:
             continue
         if anim_json is None:
