@@ -22,7 +22,6 @@ public class GUIStart {
     public static getSettingsData settings;
     private JPanel jPanel1;
     private JPanel main_jPanel;
-    //private JList jars_list;
     private JButton model_selection_btn;
     private JTextField model_txtfield;
     private JButton convert_btn;
@@ -46,8 +45,6 @@ public class GUIStart {
     private JTextArea build_output;
     private JComboBox model_log_selector_cb;
     private JLabel model_log_label;
-    //private JTextField mcjar_textField;
-    //private JButton mcjar_search_button;
     private JPanel console_jpanel;
     private JTabbedPane tabbedPane2;
     private JList jars_list;
@@ -75,7 +72,6 @@ public class GUIStart {
     private ArrayList<ArrayList<String>> modelJsons;
     private ArrayList<String> currentModelJsons;
     public BlockStates BLOCKSTATES;
-    public ImportJsons IMPORTJSONS;
     private DefaultListModel<String> listModel = new DefaultListModel<>();
     private DefaultListModel<String> listModel2 = new DefaultListModel<>();
     private HashMap<String, File> modListMaps = new HashMap<>();
@@ -100,7 +96,6 @@ public class GUIStart {
         frame.setVisible(true);
 
         settings = new getSettingsData();
-        //model_files = new ArrayList<>();
         model_files = new ArrayList<>();
         build_logs = new ArrayList<>();
         console_logs = new ArrayList<>();
@@ -204,38 +199,8 @@ public class GUIStart {
                 else
                 if (!sourcecraft_importing.toString().isEmpty()) {
                     model_files.clear();
-//                    Gson gson = new GsonBuilder().create();
-//                    String fileAsString;
-//                    try {
-//                        System.out.println(sourcecraft_importing.toPath());
-//                        fileAsString = new String(Files.readAllBytes(sourcecraft_importing.toPath()));
-//                    } catch (IOException ex) {
-//                        throw new RuntimeException(ex);
-//                    }
-//
-//                    //ImportJson importjson = new ImportJson();
-//                    System.out.println("fileAsString.length(): " + fileAsString.length());
-//                    Type type = new TypeToken<Map<String, Object>>(){}.getType();
-//                    Map<String, Object> map = gson.fromJson(fileAsString, type);
                     Map<String, String> map = getJsonContent(sourcecraft_importing);
-                    //IMPORTJSONS = gson.fromJson(fileAsString,  ImportJsons.class);
-                    //System.out.println(map);
-
-                    // [runPython] model_map: variant_model, minecraft:block/azalea
-                    // [runPython] model_map: mod_jar, C:\Users\statiic\AppData\Roaming\.minecraft\versions\1.21.11\1.21.11.jar
-                    // [runPython] model_map: model_mod_dir, minecraft
-                    // [runPython] model_map: variant_model_path, E:\Coding Projects\ProjectFiles\IdeaProjects\Minecraft MDL to Source MDL\assets\assets\minecraft\models\block\azalea.json
-                    // [runPython] model_map: blockstates_model, E:\Coding Projects\ProjectFiles\IdeaProjects\Minecraft MDL to Source MDL\assets\assets\minecraft\blockstates\azalea.json
-
                     map.forEach((block, full_model_path) -> {
-                        //System.out.println("map.forEach: " + block+", "+full_model_path);
-//                        HashMap<String, String> model = new HashMap<>();
-//                        model.put("variant_model", k);
-//                        model.put("mod_jar", "");
-//                        model.put("model_mod_dir", "");
-//                        model.put("variant_model_path", v.toString());
-//                        model.put("blockstates_model", "");
-//                        model_files.add(model);
                         try {
                             HashMap<String, HashMap<String, String>> bs_maps = doBlockStates(new File(full_model_path), block);
                             for (String key : bs_maps.keySet()) {
@@ -249,11 +214,6 @@ public class GUIStart {
                             throw new RuntimeException(ex);
                         }
                     });
-                    //System.out.println(IMPORTJSONS.returnJsons());
-
-
-                    //model_files.forEach(System.out::println);
-                    //return;
                 }
                 // convert paths for tools and game folders
                 else
